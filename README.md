@@ -40,3 +40,23 @@ python3 -m http.server 8000
 
 GitHub Pages で配信。
 Service Worker は相対パスでキャッシュするため、サブパス配信（`https://<user>.github.io/<repo>/`）でも動作します。
+
+## 式後の「ありがとうサイト」への切り替え
+
+`thanks` ブランチに式後公開用のサイト（Thank You ページ）が用意してあります。
+URL は変わらないため、席次表などに印刷した QR コードはそのまま使えます。
+
+```bash
+# 現行サイト → ありがとうサイト に切り替え（反映まで1〜2分）
+gh api -X PUT repos/GeN1219/m-cla/pages -f "source[branch]=thanks" -f "source[path]=/"
+
+# 元に戻す場合
+gh api -X PUT repos/GeN1219/m-cla/pages -f "source[branch]=main" -f "source[path]=/"
+```
+
+GitHub の画面から行う場合は Settings → Pages → Branch を `thanks` に変更。
+
+切り替え後、旧サイトの下層URL（memory/ など）へのアクセスには
+404.html が「公開を終了しました」の案内を表示します。
+結婚式の写真は `thanks` ブランチの index.html 冒頭にある CONFIG
+（heroPhoto / photos / shareUrl）に追加すると反映されます。
