@@ -471,12 +471,13 @@
         // 結婚式の詳細（決まり次第ここを埋めるだけで全体に反映されます）
         // =====================================================
         const WEDDING = {
-            dateISO: null,              // 例: '2026-11-15T10:30:00+09:00'
-            dateLabel: null,            // 例: '2026.11.15 SUN'
-            ceremonyTime: null,         // 例: '挙式　10:30'
-            receptionTime: null,        // 例: '披露宴　12:00'
-            venueName: null,            // 例: '〇〇ホテル'
-            venueAddress: null,         // 例: '岐阜県〇〇市…'
+            dateISO: '2026-11-15T10:30:00+09:00',
+            dateLabel: '2026.11.15 SUN',
+            ceremonyTime: '挙式　10:30',
+            receptionTime: '披露宴　12:00（予定）',
+            venueName: 'アニヴェルセル 白壁',
+            venueAddress: '〒461-0027 愛知県名古屋市東区芳野1-13-19',
+            venueMapUrl: 'https://www.google.com/maps/search/?api=1&query=%E3%82%A2%E3%83%8B%E3%83%B4%E3%82%A7%E3%83%AB%E3%82%BB%E3%83%AB%E7%99%BD%E5%A3%81',
             rsvpUrl: null,              // 例: GoogleフォームのURL
             rsvpDeadline: null,         // 例: '2026年10月1日までにご返信ください'
         };
@@ -520,6 +521,17 @@
             if (WEDDING.receptionTime || venue) {
                 document.getElementById('receptionSub').innerHTML =
                     [WEDDING.dateLabel, WEDDING.receptionTime, venue].filter(Boolean).join('<br>');
+            }
+            // アクセスマップへのリンク（会場が決まっている場合のみ）
+            if (WEDDING.venueMapUrl) {
+                const link = document.createElement('a');
+                link.className = 'npb-link';
+                link.style.cssText = 'display:inline-block;margin-top:26px;font-family:var(--font-latin);font-size:12px;letter-spacing:0.24em;color:var(--accent);border-bottom:1px solid var(--accent-soft);padding-bottom:2px';
+                link.href = WEDDING.venueMapUrl;
+                link.target = '_blank';
+                link.rel = 'noopener';
+                link.textContent = 'アクセスマップ ↗';
+                document.querySelector('.info-grid').insertAdjacentElement('afterend', link);
             }
         })();
 
