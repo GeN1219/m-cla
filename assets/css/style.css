@@ -296,6 +296,28 @@ a {
     margin-top: 2px;
 }
 
+/* メニューを閉じる ✕ ボタン */
+.drawer-close {
+    position: absolute;
+    top: 14px;
+    right: 18px;
+    width: 48px;
+    height: 48px;
+    border: none;
+    background: transparent;
+    color: var(--ink);
+    font-size: 34px;
+    font-weight: 300;
+    line-height: 1;
+    cursor: pointer;
+    transition: color 0.25s ease, transform 0.25s ease;
+}
+
+.drawer-close:hover {
+    color: var(--accent);
+    transform: rotate(90deg);
+}
+
 @media (max-width: 900px) {
     .nav-links {
         display: none;
