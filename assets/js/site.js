@@ -39,6 +39,13 @@
         const drawer = document.querySelector('.nav-drawer');
         if (!toggle || !drawer) return;
 
+        // 閉じる（✕）ボタンをメニュー内に生成
+        const closeBtn = document.createElement('button');
+        closeBtn.className = 'drawer-close';
+        closeBtn.setAttribute('aria-label', '閉じる');
+        closeBtn.innerHTML = '&times;';
+        drawer.appendChild(closeBtn);
+
         const close = () => {
             toggle.classList.remove('is-open');
             drawer.classList.remove('is-open');
@@ -51,7 +58,12 @@
             document.body.style.overflow = open ? 'hidden' : '';
         });
 
+        closeBtn.addEventListener('click', close);
         drawer.querySelectorAll('a').forEach((a) => a.addEventListener('click', close));
+        // リンク以外の余白をタップしても閉じる
+        drawer.addEventListener('click', (e) => {
+            if (e.target === drawer) close();
+        });
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') close();
         });
