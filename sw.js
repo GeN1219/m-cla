@@ -1,6 +1,6 @@
 // Service Worker - Network First キャッシュ戦略
 // GitHub Pages などサブパス配信でも動くよう、相対パスでキャッシュする
-const CACHE_NAME = 'ga-site-cache-v6';
+const CACHE_NAME = 'ga-site-cache-v7';
 
 // キャッシュする静的アセット
 const STATIC_ASSETS = [

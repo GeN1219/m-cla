@@ -66,6 +66,10 @@
             transition: fill 0.35s ease;
         }
 
+        .japan-map-wrap .prefecture {
+            cursor: pointer;
+        }
+
         .japan-map-wrap .prefecture:hover {
             fill: #ddd3bd;
         }
@@ -197,9 +201,79 @@
             color: var(--ink);
         }
 
+        .pref-chip {
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.2s ease;
+        }
+
+        .pref-chip:hover {
+            border-color: var(--accent-soft);
+            color: var(--ink);
+        }
+
         .pref-chip.visited::before {
             content: '✓ ';
             color: var(--accent);
+        }
+
+        /* 編集ツールバー */
+        .map-edit {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .edit-hint {
+            font-family: var(--font-sans);
+            font-size: 12px;
+            letter-spacing: 0.06em;
+            color: var(--ink-faint);
+            line-height: 1.9;
+        }
+
+        .edit-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+
+        .edit-btn {
+            font-family: var(--font-sans);
+            font-size: 12.5px;
+            letter-spacing: 0.08em;
+            padding: 8px 20px;
+            border-radius: 999px;
+            border: 1px solid var(--accent-soft);
+            background: var(--accent-faint);
+            color: var(--ink);
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .edit-btn:hover {
+            border-color: var(--accent);
+        }
+
+        .edit-btn.ghost {
+            background: var(--card);
+            color: var(--ink-soft);
+            border-color: var(--line);
+        }
+
+        .edit-btn.ghost:hover {
+            color: var(--ink);
+            border-color: var(--accent-soft);
+        }
+
+        .edit-dirty {
+            margin-top: 14px;
+            font-family: var(--font-sans);
+            font-size: 11.5px;
+            line-height: 1.95;
+            letter-spacing: 0.04em;
+            color: var(--rose);
         }
     </style>
 </head>
@@ -472,9 +546,19 @@
             <span class="lg-visited">行った</span>
             <span>まだ</span>
         </div>
+
+        <div class="map-edit">
+            <p class="edit-hint">地図や下のリストをタップすると「行った / まだ」を切り替えできます（変更はこの端末に保存されます）。</p>
+            <div class="edit-actions">
+                <button class="edit-btn" id="btnCopy">コードをコピー</button>
+                <button class="edit-btn ghost" id="btnReset">公開状態に戻す</button>
+            </div>
+            <p class="edit-dirty" id="editDirty" hidden>※ いまの変更はこの端末だけに保存されています。全員のサイトに反映するには「コードをコピー」して玄に送るか、map.html に貼り付けてください。</p>
+        </div>
     </section>
 
     <div class="map-tooltip" id="mapTooltip"></div>
+    <div class="toast" id="mapToast"></div>
 
     <section class="pref-section">
         <div class="games-head reveal">
@@ -535,28 +619,77 @@
             ['九州・沖縄', [40,41,42,43,44,45,46,47]],
         ];
 
-        const visitedSet = new Set(VISITED);
+        // =====================================================
+        // 状態管理（この端末での編集は localStorage に保存）
+        // =====================================================
+        const PUBLISHED = new Set(VISITED);          // コードに書かれた公開状態
+        const STORAGE_KEY = 'ga-map-visited-v1';
 
-        // ---- 地図の塗り分け ----
+        // 保存済みの編集があれば読み込む（無ければ公開状態から開始）
+        let visited;
+        try {
+            const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+            visited = new Set(Array.isArray(saved) ? saved : VISITED);
+        } catch (_) {
+            visited = new Set(VISITED);
+        }
+
+        const sameAsPublished = () =>
+            visited.size === PUBLISHED.size && [...visited].every(c => PUBLISHED.has(c));
+
+        // 公開状態と一致していれば保存を消す（後日コードを更新したときの食い違いを防ぐ）
+        const persist = () => {
+            if (sameAsPublished()) localStorage.removeItem(STORAGE_KEY);
+            else localStorage.setItem(STORAGE_KEY, JSON.stringify([...visited].sort((a, b) => a - b)));
+        };
+
+        // 地図の各県要素を集める（標準ツールチップは除去）
+        const mapGroups = {};
         document.querySelectorAll('#mapWrap .prefecture').forEach((g) => {
             const code = parseInt(g.dataset.code, 10);
-            if (visitedSet.has(code)) g.classList.add('visited');
-            // ブラウザ標準ツールチップは独自のものと二重になるため除去
+            mapGroups[code] = g;
             const t = g.querySelector('title');
             if (t) t.remove();
         });
+        const chipEls = {};   // code -> チップ要素（リスト生成時に登録）
 
-        // ---- カウンター ----
-        document.getElementById('visitedCount').textContent = VISITED.length;
-        document.getElementById('mapProgress').style.width = (VISITED.length / 47 * 100) + '%';
+        // 1県ぶんの見た目（地図＋チップ）を更新
+        function paint(code) {
+            const on = visited.has(code);
+            if (mapGroups[code]) mapGroups[code].classList.toggle('visited', on);
+            if (chipEls[code]) chipEls[code].classList.toggle('visited', on);
+        }
 
-        // ---- ツールチップ ----
+        // 全体の集計（カウンター・進捗・地方別・編集中表示）を更新
+        function refresh() {
+            document.getElementById('visitedCount').textContent = visited.size;
+            document.getElementById('mapProgress').style.width = (visited.size / 47 * 100) + '%';
+            document.querySelectorAll('.region').forEach((r) => {
+                const codes = JSON.parse(r.dataset.codes);
+                const done = codes.filter(c => visited.has(c)).length;
+                r.querySelector('.region-count').textContent = done + ' / ' + codes.length;
+            });
+            document.getElementById('editDirty').hidden = sameAsPublished();
+        }
+
+        // 行った / まだ を切り替え
+        function toggle(code) {
+            if (visited.has(code)) visited.delete(code);
+            else visited.add(code);
+            persist();
+            paint(code);
+            refresh();
+        }
+
+        // ---- 地図：初期塗り＋クリック＋ツールチップ ----
         const tooltip = document.getElementById('mapTooltip');
-        document.querySelectorAll('#mapWrap .prefecture').forEach((g) => {
-            const code = parseInt(g.dataset.code, 10);
+        Object.keys(mapGroups).forEach((codeStr) => {
+            const code = parseInt(codeStr, 10);
+            const g = mapGroups[code];
+            if (visited.has(code)) g.classList.add('visited');
+            g.addEventListener('click', () => toggle(code));
             g.addEventListener('mousemove', (e) => {
-                const visited = visitedSet.has(code);
-                tooltip.innerHTML = PREFS[code] + (visited ? ' ✓' : ' <span class="yet">まだ</span>');
+                tooltip.innerHTML = PREFS[code] + (visited.has(code) ? ' ✓' : ' <span class="yet">まだ</span>');
                 tooltip.style.left = e.clientX + 'px';
                 tooltip.style.top = e.clientY + 'px';
                 tooltip.classList.add('show');
@@ -564,24 +697,65 @@
             g.addEventListener('mouseleave', () => tooltip.classList.remove('show'));
         });
 
-        // ---- 都道府県リスト ----
+        // ---- 都道府県リスト（チップをクリックでトグル）----
         const listEl = document.getElementById('prefList');
         REGIONS.forEach(([name, codes]) => {
             const region = document.createElement('div');
             region.className = 'region reveal';
-            const done = codes.filter(c => visitedSet.has(c)).length;
+            region.dataset.codes = JSON.stringify(codes);
+            const done = codes.filter(c => visited.has(c)).length;
             region.innerHTML = '<p class="region-label">' + name +
                 '<span class="region-count">' + done + ' / ' + codes.length + '</span></p>';
             const chips = document.createElement('div');
             chips.className = 'pref-chips';
             codes.forEach((c) => {
-                const chip = document.createElement('span');
-                chip.className = 'pref-chip' + (visitedSet.has(c) ? ' visited' : '');
+                const chip = document.createElement('button');
+                chip.type = 'button';
+                chip.className = 'pref-chip' + (visited.has(c) ? ' visited' : '');
                 chip.textContent = PREFS[c];
+                chip.addEventListener('click', () => toggle(c));
+                chipEls[c] = chip;
                 chips.appendChild(chip);
             });
             region.appendChild(chips);
             listEl.appendChild(region);
+        });
+
+        refresh();
+
+        // ---- ツールバー：コードをコピー / 公開状態に戻す ----
+        const toast = document.getElementById('mapToast');
+        let toastTimer;
+        function showToast(msg, ok = true) {
+            toast.textContent = msg;
+            toast.className = 'toast ' + (ok ? 'ok' : 'ng') + ' show';
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => toast.classList.remove('show'), 2600);
+        }
+
+        document.getElementById('btnCopy').addEventListener('click', async () => {
+            const codes = [...visited].sort((a, b) => a - b);
+            const names = codes.map(c => PREFS[c]).join('、');
+            const text =
+                '行った都道府県（' + codes.length + '/47）\n' +
+                names + '\n' +
+                'codes: ' + codes.join(', ');
+            try {
+                await navigator.clipboard.writeText(text);
+                showToast('コピーしました（玄に送るか map.html に貼り付け）');
+            } catch (_) {
+                window.prompt('この内容をコピーしてください', text);
+            }
+        });
+
+        document.getElementById('btnReset').addEventListener('click', () => {
+            if (sameAsPublished()) { showToast('すでに公開状態です'); return; }
+            if (!confirm('この端末での変更を破棄して、公開されている状態に戻しますか？')) return;
+            localStorage.removeItem(STORAGE_KEY);
+            visited = new Set(VISITED);
+            Object.keys(mapGroups).forEach((c) => paint(parseInt(c, 10)));
+            refresh();
+            showToast('公開状態に戻しました');
         });
     </script>
 </body>
