@@ -14,37 +14,28 @@
     <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/style.css">
     <style>
-        /* ---- Days（結婚後）専用の空表示 ---- */
-        .days-empty {
+        /* ---- Days（結婚後）の章扉 ---- */
+        .days-intro {
             max-width: 640px;
             margin: 0 auto;
-            padding: 40px 24px 100px;
+            padding: 20px 24px 50px;
             text-align: center;
         }
 
-        .days-empty .mark-date {
+        .days-intro .mark-date {
             font-family: var(--font-latin);
             font-size: clamp(30px, 6vw, 46px);
             font-weight: 500;
             letter-spacing: 0.08em;
-            color: var(--ink);
+            color: var(--accent);
         }
 
-        .days-empty .lead {
-            margin-top: 22px;
+        .days-intro .lead {
+            margin-top: 20px;
             font-size: 15px;
             line-height: 2.6;
             letter-spacing: 0.1em;
             color: var(--ink-soft);
-        }
-
-        .days-empty .en {
-            margin-top: 34px;
-            font-family: var(--font-latin);
-            font-style: italic;
-            font-size: clamp(19px, 3.4vw, 26px);
-            letter-spacing: 0.1em;
-            color: var(--accent);
         }
     </style>
 </head>
@@ -79,33 +70,56 @@
         <p class="eyebrow">After the Wedding</p>
         <div class="divider"></div>
         <h1>Days</h1>
-        <p class="page-sub">夫婦になってからの、これからの日々</p>
+        <p class="page-sub">夫婦になってからの、ふたりの日々</p>
     </section>
 
     <main class="timeline">
 
-        <!-- 結婚後の思い出は、ここに .moment を追加していきます（memory/2026.html と同じ書き方）
+        <div class="days-intro reveal">
+            <p class="mark-date">2026.5.15</p>
+            <p class="lead">
+                この日、ふたりは夫婦になりました。<br>
+                ここから、夫婦としての日々がはじまります。
+            </p>
+        </div>
+
+        <!--
+            ▼ 思い出の追加テンプレート（この <section> ごとコピーして増やせます）
             <section class="moment">
-                <p class="moment-date">2026.11.15<span class="moment-tag">Wedding</span></p>
-                <h3>結婚式</h3>
-                <p class="moment-body">本文。</p>
+                <p class="moment-date">2026.MM.DD<span class="moment-tag">英語のひとこと</span></p>
+                <h3>見出し</h3>
+                <p class="moment-body">本文。<br>改行は br で。</p>
                 <div class="photo-grid">
                     <figure><img src="pic/days/ファイル名.jpg" alt="説明" loading="lazy"></figure>
                 </div>
             </section>
         -->
 
-        <div class="days-empty reveal">
-            <p class="mark-date">2026.11.15</p>
-            <p class="lead">
-                この日、ふたりは夫婦になります。<br>
-                ここには、結婚してからの日々を<br>
-                これから少しずつ綴っていきます。
+        <section class="moment">
+            <p class="moment-date">2026.07.20<span class="moment-tag">Dress Fitting</span></p>
+            <h3>衣装合わせ</h3>
+            <p class="moment-body">
+                結婚式と前撮りに向けて、和装の衣装合わせへ。<br>
+                白無垢と紋付袴に袖を通すと、いよいよ実感が湧いてきたね。<br>
+                当日が今からとても楽しみです。
             </p>
-            <p class="en">Our story continues.</p>
-        </div>
+            <div class="photo-grid">
+                <figure><img src="pic/days/fitting_futari.jpg" alt="衣装合わせ ふたり" loading="lazy"></figure>
+                <figure><img style="object-position:50% 0%" src="pic/days/fitting_bride.jpg" alt="白無垢" loading="lazy"></figure>
+                <figure><img style="object-position:50% 0%" src="pic/days/fitting_groom.jpg" alt="紋付袴" loading="lazy"></figure>
+                <figure><img src="pic/days/fitting_ushiro.jpg" alt="ふたり 後ろ姿" loading="lazy"></figure>
+            </div>
+        </section>
 
     </main>
+
+    <nav class="year-nav">
+        <a class="prev" href="memory/2026.html">
+            <span class="dir">Prev</span>
+            <span class="label">← 結婚まで 2026</span>
+        </a>
+        <a class="next is-empty" href="#" aria-hidden="true"></a>
+    </nav>
 
     <footer class="site-footer">
         <p class="brand">G<span class="amp">&amp;</span>A</p>
