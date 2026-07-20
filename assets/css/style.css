@@ -584,6 +584,29 @@ a {
     color: var(--accent);
 }
 
+/* ギャラリー末尾：Days（結婚後）への導線 */
+.story-outro {
+    text-align: center;
+    padding: 6px 24px 10px;
+}
+
+.story-outro .divider {
+    margin-bottom: 26px;
+}
+
+.story-outro .chapter-label {
+    font-family: var(--font-latin);
+    font-size: 13px;
+    letter-spacing: 0.34em;
+    text-transform: uppercase;
+    color: var(--accent);
+}
+
+.story-outro .chapter-link {
+    justify-content: center;
+    margin-top: 18px;
+}
+
 @media (max-width: 720px) {
     .chapter {
         grid-template-columns: 1fr;
