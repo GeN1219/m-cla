@@ -17,8 +17,8 @@
         /* ---- Days（結婚後）の章扉 ---- */
         .days-intro {
             max-width: 640px;
-            margin: 0 auto;
-            padding: 20px 24px 50px;
+            margin: 0 auto 90px;
+            padding: 0 24px 50px;
             text-align: center;
         }
 
@@ -73,43 +73,43 @@
         <p class="page-sub">夫婦になってからの、ふたりの日々</p>
     </section>
 
-    <main class="timeline">
+    <main class="story" id="days">
 
         <div class="days-intro reveal">
             <p class="mark-date">2026.5.15</p>
             <p class="lead">
                 この日、ふたりは夫婦になりました。<br>
-                ここから、夫婦としての日々がはじまります。
+                ここから、夫婦としての日々がはじまります。<br>
+                写真をひらくと、その年のページへ。
             </p>
         </div>
 
         <!--
-            ▼ 思い出の追加テンプレート（この <section> ごとコピーして増やせます）
-            <section class="moment">
-                <p class="moment-date">2026.MM.DD<span class="moment-tag">英語のひとこと</span></p>
-                <h3>見出し</h3>
-                <p class="moment-body">本文。<br>改行は br で。</p>
-                <div class="photo-grid">
-                    <figure><img src="pic/days/ファイル名.jpg" alt="説明" loading="lazy"></figure>
+            ▼ 年の追加テンプレート（days/YYYY.html を作って、この <article> ごとコピー）
+            <article class="chapter">
+                <a class="chapter-photo" href="days/YYYY.html">
+                    <div class="frame"><img src="pic/days/ファイル名.jpg" alt="YYYY年の日々" loading="lazy"></div>
+                </a>
+                <div class="chapter-text">
+                    <p class="chapter-year">YYYY</p>
+                    <p class="chapter-label">英語のひとこと</p>
+                    <p class="chapter-desc">その年の紹介文。</p>
+                    <a class="chapter-link" href="days/YYYY.html">VIEW DAYS<span class="arrow"></span></a>
                 </div>
-            </section>
+            </article>
         -->
 
-        <section class="moment">
-            <p class="moment-date">2026.07.20<span class="moment-tag">Dress Fitting</span></p>
-            <h3>衣装合わせ</h3>
-            <p class="moment-body">
-                結婚式と前撮りに向けて、和装の衣装合わせへ。<br>
-                白無垢と紋付袴に袖を通すと、いよいよ実感が湧いてきたね。<br>
-                当日が今からとても楽しみです。
-            </p>
-            <div class="photo-grid">
-                <figure><img src="pic/days/fitting_futari.jpg" alt="衣装合わせ ふたり" loading="lazy"></figure>
-                <figure><img style="object-position:50% 0%" src="pic/days/fitting_bride.jpg" alt="白無垢" loading="lazy"></figure>
-                <figure><img style="object-position:50% 0%" src="pic/days/fitting_groom.jpg" alt="紋付袴" loading="lazy"></figure>
-                <figure><img src="pic/days/fitting_ushiro.jpg" alt="ふたり 後ろ姿" loading="lazy"></figure>
+        <article class="chapter">
+            <a class="chapter-photo" href="days/2026.html">
+                <div class="frame"><img src="pic/days/fitting_futari.jpg" alt="2026年の日々" loading="lazy"></div>
+            </a>
+            <div class="chapter-text">
+                <p class="chapter-year">2026</p>
+                <p class="chapter-label">Just Married</p>
+                <p class="chapter-desc">5月15日、ふたりは夫婦になりました。和装の衣装合わせ、そして結婚式へ。</p>
+                <a class="chapter-link" href="days/2026.html">VIEW DAYS<span class="arrow"></span></a>
             </div>
-        </section>
+        </article>
 
     </main>
 
