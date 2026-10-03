@@ -8,8 +8,13 @@
 ```
 m-cla/
 ├── index.html           # トップ（ヒーロー + 年別ギャラリー）
-├── letter.html          # レターページ（彩乃へ）
-├── memory/              # 年別思い出ページ（2017-18〜2025）+ 写真
+├── letter.html          # レターページ（彩乃へ）※ゲスト用サイトには含めない
+├── memory/              # 年別思い出ページ（結婚前 2017-18〜2026）+ 写真
+├── days.html            # Days 一覧（結婚後）
+├── days/                # 年別 Days ページ + 写真
+├── baseball.html        # 観戦記録
+├── map.html             # 訪問都道府県マップ
+├── build-guest.sh       # ゲスト用サイト（m-guest）を生成するスクリプト
 ├── pic/                 # トップページ用写真
 ├── assets/
 │   ├── css/style.css    # 共通デザインシステム
@@ -40,6 +45,34 @@ python3 -m http.server 8000
 
 GitHub Pages で配信。
 Service Worker は相対パスでキャッシュするため、サブパス配信（`https://<user>.github.io/<repo>/`）でも動作します。
+
+## ゲスト用サイト（m-guest）
+
+結婚式にお越しいただく方には、**レターを外した版**を別サイトで公開しています。
+
+| | URL | Letter |
+|---|---|---|
+| 本体（ふたり用） | https://gen1219.github.io/m-cla/ | あり |
+| ゲスト用 | https://gen1219.github.io/m-guest/ | なし |
+
+ゲスト用サイトは本体から自動生成します。本体を更新したら次を実行してください。
+
+```bash
+./build-guest.sh                                   # ../m-guest/ を作り直す
+cd ../m-guest && git add -A && git commit -m "更新" && git push
+```
+
+`../m-guest/` の中身はスクリプトが毎回作り直すので、直接編集しないでください
+（`.git` と `.github` は残ります）。
+
+## Photo ページ
+
+ナビの「Photo」は結婚式の写真アップロードページ（Cloudflare Workers）への外部リンクです。
+
+- https://wedding-photos.gensen4631.workers.dev
+- リポジトリ: https://github.com/GeN1219/wedding-photos
+- URL を変える場合は、全 HTML の `wedding-photos.gensen4631.workers.dev` を置換してから
+  `./build-guest.sh` を実行
 
 ## 式後の「ありがとうサイト」への切り替え
 
