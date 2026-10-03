@@ -4,7 +4,8 @@
 #
 #   ./build-guest.sh
 #
-# ・このリポジトリの内容を ../m-guest/ にコピー
+# ・このリポジトリで git 管理しているファイルだけを ../m-guest/ にコピー
+#   （置いただけでまだコミットしていない写真などは公開しない）
 # ・letter.html（妻へのレター）とナビのレターリンクを取り除く
 # ・../m-guest/.git と .github（公開設定）はそのまま残す
 #
@@ -17,6 +18,15 @@ SRC="$(cd "$(dirname "$0")" && pwd)"
 DEST="${1:-$(cd "$SRC/.." && pwd)/m-guest}"
 
 mkdir -p "$DEST"
+
+# git 管理されているファイルだけを作業用フォルダに集める
+STAGE="$(mktemp -d)"
+trap 'rm -rf "${STAGE:?}"' EXIT
+(cd "$SRC" && git ls-files -z | while IFS= read -r -d '' f; do
+    [ -e "$f" ] && printf '%s\0' "$f"
+done | tar -cf - --null -T -) | tar -xf - -C "$STAGE"
+# HEIC はブラウザで表示できず、位置情報入りの撮って出しの可能性が高いので載せない
+find "$STAGE" -type f -iname '*.heic' -delete
 
 echo "▸ コピー中: $SRC → $DEST"
 rsync -a --delete \
@@ -31,7 +41,7 @@ rsync -a --delete \
     --exclude 'letter.html' \
     --exclude 'invite.html' \
     --exclude '_hagaki.html' \
-    "$SRC/" "$DEST/"
+    "$STAGE/" "$DEST/"
 
 echo "▸ レターへのリンクを除去中"
 # ナビ（PC・ドロワー）と Service Worker のキャッシュ一覧から letter.html の行を削除
