@@ -25,6 +25,7 @@ rsync -a --delete \
     --exclude '.claude/' \
     --exclude '.gitignore' \
     --exclude '.DS_Store' \
+    --exclude '_inbox/' \
     --exclude 'README.md' \
     --exclude 'build-guest.sh' \
     --exclude 'letter.html' \
