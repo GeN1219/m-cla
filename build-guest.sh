@@ -37,10 +37,10 @@ echo "▸ レターへのリンクを除去中"
 find "$DEST" -name '*.html' -type f -print0 | xargs -0 perl -i -ne 'print unless m{letter\.html}'
 perl -i -ne 'print unless m{letter\.html}' "$DEST/sw.js"
 
-# 念のため、letter.html が残っていないか確認
-if grep -rqs 'letter\.html' "$DEST" --exclude-dir=.git; then
+# 念のため、letter.html が残っていないか確認（README はこのあと書き出すので対象外）
+if grep -rqs 'letter\.html' "$DEST" --exclude-dir=.git --exclude-dir=.github --exclude='README.md'; then
     echo "✗ letter.html への参照が残っています" >&2
-    grep -rns 'letter\.html' "$DEST" --exclude-dir=.git >&2
+    grep -rns 'letter\.html' "$DEST" --exclude-dir=.git --exclude-dir=.github --exclude='README.md' >&2
     exit 1
 fi
 if [ -e "$DEST/letter.html" ]; then
