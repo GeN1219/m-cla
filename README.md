@@ -74,22 +74,35 @@ cd ../m-guest && git add -A && git commit -m "更新" && git push
 - URL を変える場合は、全 HTML の `wedding-photos.gensen4631.workers.dev` を置換してから
   `./build-guest.sh` を実行
 
-## 式後の「ありがとうサイト」への切り替え
+## 席次表の QR コード
 
-`thanks` ブランチに式後公開用のサイト（Thank You ページ）が用意してあります。
-URL は変わらないため、席次表などに印刷した QR コードはそのまま使えます。
+**QR コードはゲスト用サイトの URL にしてください。**
 
-```bash
-# 現行サイト → ありがとうサイト に切り替え（反映まで1〜2分）
-gh api -X PUT repos/GeN1219/m-cla/pages -f "source[branch]=thanks" -f "source[path]=/"
-
-# 元に戻す場合
-gh api -X PUT repos/GeN1219/m-cla/pages -f "source[branch]=main" -f "source[path]=/"
+```
+https://gen1219.github.io/m-guest/
 ```
 
-GitHub の画面から行う場合は Settings → Pages → Branch を `thanks` に変更。
+式後の「ありがとうサイト」も同じ URL に切り替わるので、印刷した QR はそのまま使えます。
+本体（m-cla）の URL はレターを含むので、ゲストには配らないでください。
 
-切り替え後、旧サイトの下層URL（memory/ など）へのアクセスには
-404.html が「公開を終了しました」の案内を表示します。
-結婚式の写真は `thanks` ブランチの index.html 冒頭にある CONFIG
-（heroPhoto / photos / shareUrl）に追加すると反映されます。
+## 式後の「ありがとうサイト」への切り替え
+
+**ありがとうサイトは m-guest リポジトリの `thanks` ブランチにあります**（m-cla ではありません）。
+
+```bash
+# 式後：ゲスト用サイト → ありがとうサイト
+gh workflow run deploy.yml --repo GeN1219/m-guest --ref thanks
+
+# ゲスト用サイトに戻す
+gh workflow run deploy.yml --repo GeN1219/m-guest --ref main
+```
+
+反映は十数秒。切り替え後、`memory/` など元のページの URL には 404.html が
+「公開を終了しました」と案内し、Thank You ページへ誘導します。
+
+結婚式の写真は `thanks` ブランチの index.html 末尾にある CONFIG
+（heroPhoto / photos / shareUrl）に追加してから、そのブランチを push してください
+（push するだけで公開も切り替わります）。詳しくは m-guest の thanks ブランチの README。
+
+> m-cla にも古い `thanks` ブランチが残っていますが、**こちらはもう使いません**。
+> 公開するのは m-guest 側です。
